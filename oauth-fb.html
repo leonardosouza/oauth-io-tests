@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Oauth Io</title>
+</head>
+<body>
+	<button>Test</button>
+	<div id="results"></div>
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.min.js"></script>
+	<script src="oauth.js"></script>
+	<script>
+		var version  = OAuth.getVersion();
+		OAuth.initialize('S8y5cq8mgDuHe3-g876vRKGfl-M');
+
+		document.querySelector('button').addEventListener('click', function() {
+
+
+			OAuth.popup('facebook',  { cache: true }).done(function(result) {
+			    console.log(result);
+			    
+			    /*result.me().done(function(data) {
+    				console.log(data);
+				})*/
+
+				/*result.get('/v2.1/4474986625216/photos')
+				.done(function(results) {
+					
+					console.log(results.data);
+
+					results.data.forEach(function(photo) {
+							$('<img>').attr('src', photo.source).appendTo('#results');	
+							$('<br><br>').appendTo('#results');
+					})
+				})*/
+
+
+				result.get('/v2.1/me/albums')
+				.done(function(results) {
+					console.log(results.data);
+
+					results.data.forEach(function(album) {
+						console.log(album.id);
+
+						result.get('/v2.1/'+album.id+'/photos')
+						.done(function(results) {
+							
+							console.log(results.data);
+
+							results.data.forEach(function(photo) {
+									$('<img>').attr('src', photo.picture).appendTo('#results');	
+									$('<p>').text(photo.name).appendTo('#results');
+									$('<hr>').appendTo('#results');
+							})
+						})
+
+					})
+				})
+			})
+
+
+
+		});
+		
+	</script>
+</body>
+</html>
+

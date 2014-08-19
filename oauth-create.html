@@ -18,19 +18,20 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.min.js"></script>
 	<script src="oauth.js"></script>
 	<script>
+
+		document.cookie = "oauthio_provider_facebook=%7B%22access_token%22%3A%22CAAFG4NIPNEQBAMYe0YFZCel2eaum5xpm70MVYQEKPXEzrxbJa2G1CYRarSIfGBJoIabd2lqGzhD5xH4B2LbMX9mfyZCQmmxubbawamFxk4Q9YShs0Uvd7vu8joAVxVZAkbOcmEboc9jCrUjBpKeZByRdN7uCdNzpVRRlNEVCmeHeeyexaPa4zhU3rpUwdTzgnPn7hHGKLo1ipwG1XwoP%22%2C%22expires_in%22%3A5173138%2C%22request%22%3A%7B%22cors%22%3Atrue%2C%22query%22%3A%7B%22access_token%22%3A%22%7B%7Btoken%7D%7D%22%7D%2C%22url%22%3A%22https%3A%2F%2Fgraph.facebook.com%22%7D%7D";
+
 		var version  = OAuth.getVersion();
 		OAuth.initialize('S8y5cq8mgDuHe3-g876vRKGfl-M');
 		var tw = OAuth.create('twitter');
+		var fb = OAuth.create('facebook');
 
-		tw.me().done(function(data) {
+		/*tw.me().done(function(data) {
 			var source   = $("#profile").html();
 			var template = Handlebars.compile(source);
 			var html = template(data);
 			$('#bio').html(html);
 		})
-
-
-
 		
 		tw.get('/1.1/statuses/user_timeline.json', {
 			data: {
@@ -47,6 +48,49 @@
 		})
 		.error(function(error) {
 			console.log(error);
+		})*/
+
+
+		var processData = function(photo) {
+			var deferred = $.Deferred();
+
+			setTimeout(function(){
+				deferred.resolve(photo);
+			}, 500);
+
+			return deferred.promise();
+		}
+
+
+		fb.get('/v2.1/me/albums')
+		.done(function(results) {
+			console.log(results.data);
+
+			results.data.forEach(function(album) {
+				//console.log(album.id);
+
+				fb.get('/v2.1/'+album.id+'/photos')
+				.done(function(results) {
+					
+					//console.log(results.data);
+
+					//results.data.forEach(processData);
+					processData(results.data)
+						.done(function(phot) {
+							console.log(phot);
+							phot.forEach(function(photo) {
+								$('<img>')
+									.attr({'src': photo.picture, 'title': photo.name})	
+									.add('<hr>').appendTo('#results');
+							});
+						})
+						.fail(function(error) {
+							console.log("ERRO=>", error);
+						})
+
+				})
+
+			})
 		})
 		
 	</script>
