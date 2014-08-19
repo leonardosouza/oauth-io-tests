@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Oauth Io</title>
+	<style>
+		body { font: 100%/1.5 helvetica; }
+		.twitter-profile { border: 1px solid; width: 30%; min-height: 75px; }
+		.twitter-profile .photo { float: left; width: 15%; }
+		.twitter-profile .me { float: right; width: 85%; }
+		.twitter-profile .me p { margin: 0; }
+	</style>
+</head>
+<body>
+	<div id="bio"></div>
+	<div id="results"></div>
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.min.js"></script>
+	<script src="oauth.js"></script>
+	<script>
+		var version  = OAuth.getVersion();
+		OAuth.initialize('S8y5cq8mgDuHe3-g876vRKGfl-M');
+		var tw = OAuth.create('twitter');
+
+		tw.me().done(function(data) {
+			var source   = $("#profile").html();
+			var template = Handlebars.compile(source);
+			var html = template(data);
+			$('#bio').html(html);
+		})
+
+
+
+		
+		tw.get('/1.1/statuses/user_timeline.json', {
+			data: {
+				screen_name: "leonardosouza",
+				count: 200
+			}
+		})
+		.done(function(d) {
+			var html = [];
+			d.forEach(function(r, i) {
+				html.push('<p>'+ i + ' ' + r.text + '</p>');
+			});
+			$('#results').html(html.join(''))
+		})
+		.error(function(error) {
+			console.log(error);
+		})
+		
+	</script>
+
+	<script id="profile" type="text/template">
+		<div class="twitter-profile">
+			<div class="photo"><img src="{{avatar}}"></div>
+			<div class="me">
+				<p>{{name}}</p>
+				<p>{{bio}}</p>
+			</div>
+		</div>
+
+	</script>
+
+
+
+
+</body>
+</html>

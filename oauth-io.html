@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Oauth Io</title>
+</head>
+<body>
+	<button>Test</button>
+	<div id="results"></div>
+	<script src="bower_components/oauth-js/dist/oauth.js"></script>
+	<script>
+		var twProvider = {};
+
+		var version  = OAuth.getVersion();
+		console.log(version);
+		OAuth.initialize('S8y5cq8mgDuHe3-g876vRKGfl-M');
+
+		document.querySelector('button').addEventListener('click', function() {
+
+
+			OAuth.popup('twitter', { cache: true }, function(error, res) {
+				
+				/*success.me().done(function(data) {
+					console.log(data);
+				})*/
+
+				console.log(res);
+
+				res
+					.get('/1.1/statuses/user_timeline.json', {
+						data: {
+							screen_name: "caelum",
+							count: 200
+						}
+					})
+					.done(function(d) {
+						var html = [];
+						d.forEach(function(r, i) {
+							html.push('<p>'+ i + ' ' + r.text + '</p>');
+						});
+						$('#results').html(html.join(''))
+					})
+					.error(function(error) {
+						console.log(error);
+					})
+			});
+
+
+
+		});
+		
+	</script>
+</body>
+</html>
